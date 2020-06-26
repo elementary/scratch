@@ -59,6 +59,7 @@
         <p>Fixes:</p>
         <ul>
           <li>Fix empty sidebar layout, ensuring folders can always be added</li>
+          <li>Fix visibility of Terminal button on Welcome page</li>
         </ul>
         <p>Minor updates:</p>
         <ul>

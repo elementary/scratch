@@ -356,8 +356,7 @@ namespace Scratch {
             bottombar.no_show_all = true;
             bottombar.page_removed.connect (() => { on_plugin_toggled (bottombar); });
             bottombar.page_added.connect (() => {
-                if (!split_view.is_empty ())
-                    on_plugin_toggled (bottombar);
+                on_plugin_toggled (bottombar);
             });
 
             var content = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
@@ -508,8 +507,6 @@ namespace Scratch {
             // PlugIns
             if (val) {
                 on_plugin_toggled (bottombar);
-            } else {
-                bottombar.visible = val;
             }
         }
 
@@ -525,6 +522,9 @@ namespace Scratch {
 
         // Get current document
         public Scratch.Services.Document? get_current_document () {
+            if (split_view.is_empty ()) {
+                return null;
+            }
             var view = get_current_view ();
             if (view != null) {
                 return view.current_document;

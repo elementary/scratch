@@ -159,13 +159,7 @@ public class Scratch.Plugins.Terminal : Peas.ExtensionBase, Peas.Activatable {
     }
 
     void on_hook_split_view (Scratch.Widgets.SplitView view) {
-        this.tool_button.visible = ! view.is_empty ();
-        view.welcome_shown.connect (() => {
-            this.tool_button.visible = false;
-        });
-        view.welcome_hidden.connect (() => {
-            this.tool_button.visible = true;
-        });
+        this.tool_button.visible = true;
     }
 
     void on_hook_toolbar (Scratch.Widgets.HeaderBar toolbar) {
@@ -182,7 +176,10 @@ public class Scratch.Plugins.Terminal : Peas.ExtensionBase, Peas.Activatable {
             } else {
                 tool_button.tooltip_text = _("Show Terminal");
                 bottombar.remove_page (bottombar.page_num (grid));
-                window.get_current_document ().focus ();
+                var document = window.get_current_document ();
+                if (document != null) {
+                    document.focus ();
+                }
             }
         });
 
