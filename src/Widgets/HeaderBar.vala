@@ -21,12 +21,24 @@
 
 namespace Scratch.Widgets {
     public class HeaderBar : Hdy.HeaderBar {
+
         public Gtk.Menu share_menu;
         public Gtk.MenuButton share_app_menu;
         public Gtk.MenuButton app_menu;
         public Gtk.ToggleButton find_button;
         public Gtk.Button templates_button;
         public Code.FormatBar format_bar;
+        public ProjectCombo project_combo;
+
+        public FolderManager.ProjectFolderItem? active_project {
+            owned get {
+                return project_combo.active_project;
+            }
+
+            set {
+                    project_combo.active_project = value;
+            }
+        }
 
         private const string STYLE_SCHEME_HIGH_CONTRAST = "classic";
         private const string STYLE_SCHEME_LIGHT = "solarized-light";
@@ -42,6 +54,7 @@ namespace Scratch.Widgets {
         construct {
             var app_instance = (Scratch.Application) GLib.Application.get_default ();
 
+            project_combo = new ProjectCombo ();
             var open_button = new Gtk.Button.from_icon_name ("document-open", Gtk.IconSize.LARGE_TOOLBAR);
             open_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_OPEN;
             open_button.tooltip_markup = Granite.markup_accel_tooltip (
@@ -190,6 +203,7 @@ namespace Scratch.Widgets {
             };
             set_custom_title (format_bar);
 
+            pack_start (project_combo);
             pack_start (open_button);
             pack_start (templates_button);
             pack_start (save_button);

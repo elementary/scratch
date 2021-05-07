@@ -34,6 +34,7 @@ namespace Scratch.FolderManager {
         // Cache the visible item in the project.
         private List<VisibleItem?> visible_item_list = null;
         public string top_level_path { get; construct; }
+
         public bool is_git_repo {
             get {
                 return monitored_repo != null;
@@ -45,6 +46,8 @@ namespace Scratch.FolderManager {
                 return (is_git_repo ? monitored_repo.git_repo : null);
             }
         }
+
+        public string? branch_name { get; private set; default = null; }
 
         public ProjectFolderItem (File file, FileView view) requires (file.is_valid_directory) {
             Object (file: file, view: view);
@@ -111,7 +114,7 @@ namespace Scratch.FolderManager {
 
             var search_item = new Gtk.MenuItem () {
                 action_name = "win.action_find_global",
-                action_target = new Variant.string (file.file.get_path ())
+                action_target = new Variant.string (path)
             };
             search_item.add (search_accellabel);
 
@@ -495,7 +498,7 @@ namespace Scratch.FolderManager {
 
                 var branch_item = new Gtk.MenuItem () {
                     action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_NEW_BRANCH,
-                    action_target = project_folder.file.file.get_path ()
+                    action_target = project_folder.path
                 };
                 branch_item.add (accel_label);
 

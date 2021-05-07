@@ -344,6 +344,13 @@ namespace Scratch {
                 });
             });
 
+            folder_manager_view.project_added.connect ((project) => {
+                toolbar.project_combo.add_project (project);
+            });
+            folder_manager_view.project_removed.connect ((name) => {
+                toolbar.project_combo.remove_project (name);
+            });
+
             folder_manager_view.restore_saved_state ();
 
             bottombar = new Gtk.Notebook ();
@@ -433,6 +440,10 @@ namespace Scratch {
                 if (doc != null) {
                     toolbar.set_document_focus (doc);
                     folder_manager_view.select_path (doc.file.get_path ());
+                    var active_project = folder_manager_view.get_git_project_for_file (doc.file);
+                    if (active_project != null) {
+                        toolbar.active_project = active_project;
+                    } // Else leave as it is.
                 }
 
                 // Set actions sensitive property
@@ -878,19 +889,7 @@ namespace Scratch {
         }
 
         private void action_find_global (SimpleAction action, Variant? param) {
-            string path = "";
-            if (param != null) {
-                path = param.get_string ();
-            }
-
-            if (path == "") {
-                var current_doc = get_current_document ();
-                if (current_doc != null) {
-                    path = current_doc.file.get_path ();
-                }
-            }
-
-            folder_manager_view.search_global (path);
+            folder_manager_view.search_global (get_target_path_for_git_actions (param));
         }
 
         private void set_search_text () {
@@ -1007,23 +1006,30 @@ namespace Scratch {
             doc.source_view.clear_selected_lines ();
         }
 
+        // param contains path of the target project which may or may not be the currently active one
         private void action_new_branch (SimpleAction action, Variant? param) {
-            string path = "";
-            File? file = null;
-            if (param != null) {
-                path = param.get_string ();
+            folder_manager_view.new_branch (get_target_path_for_git_actions (param));
+        }
+
+        private string? get_target_path_for_git_actions (Variant? path_variant) {
+            string? path = "";
+            if (path_variant != null) {
+                path = path_variant.get_string ();
             }
 
-            if (path == "") {
-                var current_doc = get_current_document ();
-                if (current_doc != null) {
-                    file = current_doc.file;
+            if (path == "") { // Happens when keyboard accelerator is used
+                path = toolbar.active_project.path;
+                if (path == null) {
+                    var current_doc = get_current_document ();
+                    if (current_doc != null) {
+                        path = current_doc.file.get_path ();
+                    } else {
+                        return null; // Cannot determine target project
+                    }
                 }
-            } else {
-                file = File.new_for_path (path);
             }
 
-            folder_manager_view.new_branch (file);
+            return path;
         }
     }
 }

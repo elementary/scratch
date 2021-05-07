@@ -28,6 +28,12 @@ namespace Scratch.FolderManager {
         private bool children_loaded = false;
         private Granite.Widgets.SourceList.Item dummy; /* Blank item for expanded empty folders */
 
+        public string basename {
+            owned get {
+                return file.file.get_basename ();
+            }
+        }
+
         public FolderItem (File file, FileView view) requires (file.is_valid_directory) {
             Object (file: file, view: view);
         }
@@ -105,7 +111,7 @@ namespace Scratch.FolderManager {
 
             var search_item = new Gtk.MenuItem.with_label (_("Find in Folder…")) {
                 action_name = "win.action_find_global",
-                action_target = new Variant.string (file.file.get_path ())
+                action_target = new Variant.string (path)
             };
 
             var menu = new Gtk.Menu ();

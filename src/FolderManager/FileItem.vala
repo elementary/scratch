@@ -23,6 +23,12 @@ namespace Scratch.FolderManager {
      * Normal item in the source list, represents a textfile.
      */
     public class FileItem : Item {
+        public string basename {
+            owned get {
+                return file.file.get_basename ();
+            }
+        }
+
         public FileItem (File file, FileView view) {
             Object (file: file, view: view);
         }
