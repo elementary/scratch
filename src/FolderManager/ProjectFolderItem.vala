@@ -134,7 +134,10 @@ namespace Scratch.FolderManager {
             menu.append (create_submenu_for_new ());
 
             if (monitored_repo != null) {
-                menu.append (new ChangeBranchMenu (this));
+                var branch_menu = new ChangeBranchMenu (this) {
+                    sensitive = !monitored_repo.has_uncommitted
+                };
+                menu.append (branch_menu);
             }
 
             menu.append (new Gtk.SeparatorMenuItem ());

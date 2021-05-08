@@ -96,6 +96,12 @@ namespace Scratch.Services {
             }
         }
 
+        public bool has_uncommitted {
+            get {
+                return file_status_map.size > 0;
+            }
+        }
+
         construct {
             file_status_map = new Gee.HashMap<string, Ggit.StatusFlags?> ();
             status_options = new Ggit.StatusOptions (
@@ -195,6 +201,13 @@ namespace Scratch.Services {
         public void change_branch (string new_branch_name) throws Error {
             var branch = git_repo.lookup_branch (new_branch_name, Ggit.BranchType.LOCAL);
             git_repo.set_head (((Ggit.Ref)branch).get_name ());
+            var options = new Ggit.CheckoutOptions () {
+                //Ensure documents match checked out branch (deal with potential conflicts/losses beforehand)
+                strategy = Ggit.CheckoutStrategy.FORCE
+            };
+
+            git_repo.checkout_head (options); //Use default options for now
+
             branch_name = new_branch_name;
         }
 
