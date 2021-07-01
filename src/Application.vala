@@ -128,7 +128,7 @@ namespace Scratch {
                 window = this.new_window (); // Will restore documents if required
                 window.show ();
             } else {
-                window.present ();
+                window.present_with_time ((uint32) GLib.get_monotonic_time ());
             }
 
             // Create a new document if requested
