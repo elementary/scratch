@@ -47,7 +47,10 @@ namespace Scratch.FolderManager {
         }
 
         public ProjectFolderItem (File file, FileView view) requires (file.is_valid_directory) {
-            Object (file: file, view: view);
+            Object (file: file,
+                    view: view,
+                    top_level_path: file.file.get_path ()
+            );
         }
 
         static construct {
