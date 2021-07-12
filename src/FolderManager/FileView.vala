@@ -63,17 +63,18 @@ namespace Scratch.FolderManager {
             }
         }
 
-        public void open_folder (File folder) {
+        public ProjectFolderItem? open_folder (File folder) {
             if (is_open (folder)) {
                 var existing = find_path (root, folder.path);
                 if (existing is Granite.Widgets.SourceList.ExpandableItem) {
                     ((Granite.Widgets.SourceList.ExpandableItem)existing).expanded = true;
+                    return (Scratch.FolderManager.ProjectFolderItem) existing;
                 }
 
-                return;
+                return null;
             }
 
-            add_folder (folder, true);
+            return add_folder (folder, true);
         }
 
         public void collapse_all () {
@@ -196,13 +197,13 @@ namespace Scratch.FolderManager {
             }
         }
 
-        private void add_folder (File folder, bool expand) {
+        private ProjectFolderItem? add_folder (File folder, bool expand) {
             if (is_open (folder)) {
                 warning ("Folder '%s' is already open.", folder.path);
-                return;
+                return null;
             } else if (!folder.is_valid_directory (true)) { // Allow hidden top-level folders
                 warning ("Cannot open invalid directory.");
-                return;
+                return null;
             }
 
             var folder_root = new ProjectFolderItem (folder, this); // Constructor adds project to GitManager
@@ -229,6 +230,8 @@ namespace Scratch.FolderManager {
             });
 
             write_settings ();
+
+            return folder_root;
         }
 
         private bool is_open (File folder) {

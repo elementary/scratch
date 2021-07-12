@@ -1,0 +1,8 @@
+[Plugin]
+Module=libgvls-code
+IAge=0
+Name=GVls Vala Completion Plugin
+Description= Provides completion for Vala sources
+Authors=Daniel Espinosa <esodan@gmail.com>
+Copyright=Copyright © 2018-2020 Daniel Espinosa Ortiz
+Website=https://gitlab.gnome.org/esodan/gvls/wikis/home

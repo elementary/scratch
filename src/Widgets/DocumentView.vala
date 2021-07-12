@@ -26,7 +26,11 @@ public class Scratch.Widgets.DocumentView : Granite.Widgets.DynamicNotebook {
 
     public Services.Document current_document {
         get {
-            return (Services.Document) current;
+            unowned Services.Document doc = null;
+            if (current is Services.Document) {
+                doc = (Services.Document) current;
+            }
+            return doc;
         }
         set {
             current = value;

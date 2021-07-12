@@ -20,6 +20,9 @@
 
 namespace Scratch {
     public class MainWindow : Hdy.Window {
+
+        public signal void document_opened (Scratch.Services.Document doc);
+        public signal void folder_opened (Scratch.FolderManager.ProjectFolderItem? project);
         public const int FONT_SIZE_MAX = 72;
         public const int FONT_SIZE_MIN = 7;
         private const uint MAX_SEARCH_TEXT_LENGTH = 255;
@@ -555,13 +558,15 @@ namespace Scratch {
 
         public void open_folder (File folder) {
             var foldermanager_file = new FolderManager.File (folder.get_path ());
-            folder_manager_view.open_folder (foldermanager_file);
+            Scratch.FolderManager.ProjectFolderItem? project = folder_manager_view.open_folder (foldermanager_file);
+            folder_opened (project);
         }
 
         public void open_document (Scratch.Services.Document doc, bool focus = true, int cursor_position = 0) {
             FolderManager.ProjectFolderItem? project = folder_manager_view.get_project_for_file (doc.file);
             doc.source_view.project = project;
             document_view.open_document (doc, focus, cursor_position);
+            document_opened (doc);
         }
 
         // Close a document
