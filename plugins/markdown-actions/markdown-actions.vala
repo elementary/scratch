@@ -159,6 +159,7 @@ public class Code.Plugins.MarkdownActions : Peas.ExtensionBase, Peas.Activatable
     }
 
     private bool parse_ordered_list_item (string line, ref int current_number, out string item_text) {
+        item_text = "";
         int first_point_character = line.index_of_char ('.');
         if (first_point_character < 0) {
             return false;
