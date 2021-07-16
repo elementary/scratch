@@ -36,18 +36,24 @@ namespace Scratch.FolderManager {
                 new_window.open_document (doc, true);
             });
 
-            var files_appinfo = AppInfo.get_default_for_type ("inode/directory", true);
+            Gtk.MenuItem files_menuitem = null;
 
-            var files_item_icon = new Gtk.Image.from_gicon (files_appinfo.get_icon (), Gtk.IconSize.MENU);
-            files_item_icon.pixel_size = 16;
+            if (in_sandbox) {
+                files_menuitem = new Gtk.MenuItem.with_label (_("File Manager"));
+                files_menuitem.activate.connect (() => open_on_file_manager (file));
+            } else {
+                var files_appinfo = AppInfo.get_default_for_type ("inode/directory", true);
 
-            var files_item_grid = new Gtk.Grid ();
-            files_item_grid.add (files_item_icon);
-            files_item_grid.add (new Gtk.Label (files_appinfo.get_name ()));
+                var files_item_icon = new Gtk.Image.from_gicon (files_appinfo.get_icon (), Gtk.IconSize.MENU);
+                files_item_icon.pixel_size = 16;
 
-            var files_menuitem = new Gtk.MenuItem ();
-            files_menuitem.add (files_item_grid);
-            files_menuitem.activate.connect (() => launch_app_with_file (files_appinfo, file.file));
+                var files_item_grid = new Gtk.Grid ();
+                files_item_grid.add (files_item_icon);
+                files_item_grid.add (new Gtk.Label (files_appinfo.get_name ()));
+
+                files_menuitem = new Gtk.MenuItem ();
+                files_menuitem.add (files_item_grid);
+            }
 
             var other_menuitem = new Gtk.MenuItem.with_label (_("Other Application…"));
             other_menuitem.activate.connect (() => show_app_chooser (file));
@@ -134,6 +140,19 @@ namespace Scratch.FolderManager {
             menu.show_all ();
 
             return menu;
+        }
+
+        public void open_on_file_manager (File file) {
+            var portal = ((Scratch.Application) GLib.Application.get_default ()).portal;
+            var parent = new Xdp.Gtk3.Parent (((Gtk.Application) GLib.Application.get_default ()).active_window);
+
+            portal.open_directory.begin (parent, file.file.get_uri (), Xdp.OpenUriFlags.NONE, null, (obj, res) => {
+                try {
+                    portal.open_directory.end (res);
+                } catch (Error e) {
+                    warning (e.message);
+                }
+            });
         }
     }
 }

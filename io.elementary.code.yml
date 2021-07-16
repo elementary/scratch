@@ -119,6 +119,15 @@ modules:
         url: https://github.com/universal-ctags/ctags.git
         tag: p5.9.20201101.0
 
+  - name: libportal
+    buildsystem: meson
+    config-opts:
+     - '-Dgtk_doc=false'
+    sources:
+      - type: git
+        url: https://github.com/flatpak/libportal.git
+        tag: '0.4'
+
   - name: code
     buildsystem: meson
     config-opts:

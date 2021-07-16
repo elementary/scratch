@@ -76,17 +76,30 @@ namespace Scratch.FolderManager {
         }
 
         public void show_app_chooser (File file) {
-            var dialog = new Gtk.AppChooserDialog (new Gtk.Window (), Gtk.DialogFlags.MODAL, file.file);
-            dialog.deletable = false;
+            if (in_sandbox) {
+                var portal = ((Scratch.Application) GLib.Application.get_default ()).portal;
+                var parent = new Xdp.Gtk3.Parent (((Gtk.Application) GLib.Application.get_default ()).active_window);
 
-            if (dialog.run () == Gtk.ResponseType.OK) {
-                var app_info = dialog.get_app_info ();
-                if (app_info != null) {
-                    launch_app_with_file (app_info, file.file);
+                portal.open_uri.begin (parent, file.file.get_uri (), Xdp.OpenUriFlags.ASK, null, (obj, res) => {
+                    try {
+                        portal.open_uri.end (res);
+                    } catch (Error e) {
+                        warning (e.message);
+                    }
+                });
+            } else {
+                var dialog = new Gtk.AppChooserDialog (new Gtk.Window (), Gtk.DialogFlags.MODAL, file.file);
+                dialog.deletable = false;
+
+                if (dialog.run () == Gtk.ResponseType.OK) {
+                    var app_info = dialog.get_app_info ();
+                    if (app_info != null) {
+                        launch_app_with_file (app_info, file.file);
+                    }
                 }
-            }
 
-            dialog.destroy ();
+                dialog.destroy ();
+            }
         }
 
         public void launch_app_with_file (AppInfo app_info, GLib.File file) {

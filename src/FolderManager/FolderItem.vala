@@ -109,7 +109,7 @@ namespace Scratch.FolderManager {
             };
 
             var menu = new Gtk.Menu ();
-            menu.append (create_submenu_for_open_in (info, file_type));
+            menu.append (create_open_in_menuitem (info, file_type));
             menu.append (contractor_item);
             menu.append (new Gtk.SeparatorMenuItem ());
             menu.append (create_submenu_for_new ());
@@ -122,49 +122,56 @@ namespace Scratch.FolderManager {
             return menu;
         }
 
-        protected Gtk.MenuItem create_submenu_for_open_in (GLib.FileInfo? info, string? file_type) {
-            var other_menuitem = new Gtk.MenuItem.with_label (_("Other Application…"));
-            other_menuitem.activate.connect (() => show_app_chooser (file));
+        protected Gtk.MenuItem create_open_in_menuitem (GLib.FileInfo? info, string? file_type) {
+            Gtk.MenuItem open_in_item = null;
 
-            file_type = file_type ?? "inode/directory";
+            if (in_sandbox) {
+                open_in_item = new Gtk.MenuItem.with_label (_("Open In…"));
+                open_in_item.activate.connect (() => show_app_chooser (file));
+            } else {
+                var other_menuitem = new Gtk.MenuItem.with_label (_("Other Application…"));
+                other_menuitem.activate.connect (() => show_app_chooser (file));
 
-            var open_in_menu = new Gtk.Menu ();
+                file_type = file_type ?? "inode/directory";
 
-            if (info != null) {
-                List<AppInfo> external_apps = GLib.AppInfo.get_all_for_type (file_type);
+                var open_in_menu = new Gtk.Menu ();
 
-                string this_id = GLib.Application.get_default ().application_id + ".desktop";
+                if (info != null) {
+                    List<AppInfo> external_apps = GLib.AppInfo.get_all_for_type (file_type);
 
-                foreach (AppInfo app_info in external_apps) {
-                    if (app_info.get_id () == this_id) {
-                        continue;
+                    string this_id = GLib.Application.get_default ().application_id + ".desktop";
+
+                    foreach (AppInfo app_info in external_apps) {
+                        if (app_info.get_id () == this_id) {
+                            continue;
+                        }
+
+                        var menuitem_icon = new Gtk.Image.from_gicon (app_info.get_icon (), Gtk.IconSize.MENU);
+                        menuitem_icon.pixel_size = 16;
+
+                        var menuitem_grid = new Gtk.Grid ();
+                        menuitem_grid.add (menuitem_icon);
+                        menuitem_grid.add (new Gtk.Label (app_info.get_name ()));
+
+                        var item_app = new Gtk.MenuItem ();
+                        item_app.add (menuitem_grid);
+
+                        item_app.activate.connect (() => {
+                            launch_app_with_file (app_info, file.file);
+                        });
+                        open_in_menu.add (item_app);
                     }
-
-                    var menuitem_icon = new Gtk.Image.from_gicon (app_info.get_icon (), Gtk.IconSize.MENU);
-                    menuitem_icon.pixel_size = 16;
-
-                    var menuitem_grid = new Gtk.Grid ();
-                    menuitem_grid.add (menuitem_icon);
-                    menuitem_grid.add (new Gtk.Label (app_info.get_name ()));
-
-                    var item_app = new Gtk.MenuItem ();
-                    item_app.add (menuitem_grid);
-
-                    item_app.activate.connect (() => {
-                        launch_app_with_file (app_info, file.file);
-                    });
-                    open_in_menu.add (item_app);
                 }
+
+                if (open_in_menu.get_children ().length () > 0) {
+                    open_in_menu.add (new Gtk.SeparatorMenuItem ());
+                }
+
+                open_in_menu.add (other_menuitem);
+
+                open_in_item = new Gtk.MenuItem.with_label (_("Open In"));
+                open_in_item.submenu = open_in_menu;
             }
-
-            if (open_in_menu.get_children ().length () > 0) {
-                open_in_menu.add (new Gtk.SeparatorMenuItem ());
-            }
-
-            open_in_menu.add (other_menuitem);
-
-            var open_in_item = new Gtk.MenuItem.with_label (_("Open In"));
-            open_in_item.submenu = open_in_menu;
 
             return open_in_item;
         }

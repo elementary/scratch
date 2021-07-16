@@ -25,11 +25,13 @@ namespace Scratch {
     public GLib.Settings settings;
     public GLib.Settings service_settings;
     public GLib.Settings privacy_settings;
+    public bool in_sandbox;
 
     public class Application : Gtk.Application {
         public string app_cmd_name { get { return _app_cmd_name; } }
         public string data_home_folder_unsaved { get { return _data_home_folder_unsaved; } }
         public string default_font { get; set; }
+        public Xdp.Portal portal;
         private static string _app_cmd_name;
         private static string _data_home_folder_unsaved;
         private static bool create_new_tab = false;
@@ -67,6 +69,11 @@ namespace Scratch {
             settings = new GLib.Settings (Constants.PROJECT_NAME + ".settings");
             service_settings = new GLib.Settings (Constants.PROJECT_NAME + ".services");
             privacy_settings = new GLib.Settings ("org.gnome.desktop.privacy");
+            in_sandbox = FileUtils.test ("/.flatpak-info", FileTest.EXISTS);
+
+            if (in_sandbox) {
+                portal = new Xdp.Portal ();
+            }
         }
 
         public override int handle_local_options (VariantDict options) {
