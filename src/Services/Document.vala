@@ -105,6 +105,7 @@ namespace Scratch.Services {
         private Gtk.ScrolledWindow scroll;
         private Gtk.InfoBar info_bar;
         private Gtk.SourceMap source_map;
+        private Gtk.Paned outline_widget_pane;
 
         private GLib.Cancellable save_cancellable;
         private GLib.Cancellable load_cancellable;
@@ -142,11 +143,15 @@ namespace Scratch.Services {
             main_stack = new Gtk.Stack ();
             source_view = new Scratch.Widgets.SourceView ();
 
-            scroll = new Gtk.ScrolledWindow (null, null);
+            scroll = new Gtk.ScrolledWindow (null, null) {
+                expand = true
+            };
             scroll.add (source_view);
             info_bar = new Gtk.InfoBar ();
             source_file = new Gtk.SourceFile ();
             source_map = new Gtk.SourceMap ();
+            outline_widget_pane = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
+
             if (builder_blocks_font != null && builder_font_map != null) {
                 source_map.set_font_map (builder_font_map);
                 source_map.font_desc = builder_blocks_font;
@@ -169,15 +174,18 @@ namespace Scratch.Services {
                 return working;
             });
 
-            var source_grid = new Gtk.Grid ();
-            source_grid.orientation = Gtk.Orientation.HORIZONTAL;
+            var source_grid = new Gtk.Grid () {
+                orientation = Gtk.Orientation.HORIZONTAL,
+                column_homogeneous = false
+            };
             source_grid.add (scroll);
             source_grid.add (source_map);
+            outline_widget_pane.pack1 (source_grid, true, false);
 
             var doc_grid = new Gtk.Grid ();
             doc_grid.orientation = Gtk.Orientation.VERTICAL;
             doc_grid.add (info_bar);
-            doc_grid.add (source_grid);
+            doc_grid.add (outline_widget_pane);
             doc_grid.show_all ();
 
             main_stack.add_named (doc_grid, "content");
@@ -923,6 +931,31 @@ namespace Scratch.Services {
         private void unmounted_cb () {
             warning ("Folder containing the file was unmounted");
             mounted = false;
+        }
+
+        public bool add_outline_widget (Gtk.Widget extra) {
+            if (has_outline_widget ()) {
+                return false;
+            } else {
+                //TODO Style the extra widget to match the document.
+                outline_widget_pane.pack2 (extra, false, false);
+                var position = int.max (outline_widget_pane.get_allocated_width () * 4 / 5, 100);
+                outline_widget_pane.set_position (position);
+                return true;
+            }
+        }
+
+        public bool remove_outline_widget () {
+            if (!has_outline_widget ()) {
+                return false;
+            } else {
+                outline_widget_pane.get_child2 ().destroy ();
+                return true;
+            }
+        }
+
+        public bool has_outline_widget () {
+            return outline_widget_pane.get_child2 () != null;
         }
     }
 }

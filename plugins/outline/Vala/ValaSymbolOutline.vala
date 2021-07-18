@@ -51,8 +51,6 @@ public class Code.Plugins.ValaSymbolOutline : Object, Code.Plugins.SymbolOutline
             cancellable.cancel ();
             cancellable = null;
         }
-
-        closed ();
     }
 
     public Granite.Widgets.SourceList get_source_list () {
