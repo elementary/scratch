@@ -41,6 +41,22 @@ desktop_file = i18n.merge_file(
     install: true
 )
 
+# Create a .desktop for Files' "Open in..." context menu
+openhere_desktop_in_file = configure_file(
+    input: 'open-pantheon-code-here.desktop.in.in',
+    output: '@BASENAME@',
+    configuration: config_data
+)
+
+openhere_desktop_file = i18n.merge_file(
+    input: openhere_desktop_in_file,
+    output: 'open-pantheon-code-here.desktop',
+    po_dir: join_paths(meson.source_root (), 'po', 'extra'),
+    type: 'desktop',
+    install_dir: join_paths(get_option('datadir'), 'applications'),
+    install: true
+)
+
 # Translate the AppData file
 appstream_file = i18n.merge_file(
     input: 'io.elementary.code.appdata.xml.in',
