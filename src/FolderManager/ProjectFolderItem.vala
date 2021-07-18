@@ -257,10 +257,10 @@ namespace Scratch.FolderManager {
             return is_git_repo ? monitored_repo.is_valid_new_local_branch_name (new_name) : false;
         }
 
-        public void global_search (GLib.File start_folder = this.file.file) {
+        public void global_search (GLib.File start_folder = this.file.file, string? term = null) {
             /* For now set all options to the most inclusive (except case).
              * The ability to set these in the dialog (or by parameter) may be added later. */
-            string? term = null;
+            string? search_term = null;
             bool use_regex = false;
             bool search_tracked_only = false;
             bool recurse_subfolders = true;
@@ -276,13 +276,14 @@ namespace Scratch.FolderManager {
                 monitored_repo != null && monitored_repo.git_repo != null
             ) {
                 case_sensitive = case_sensitive,
-                use_regex = use_regex
+                use_regex = use_regex,
+                search_term = term
             };
 
             dialog.response.connect ((response) => {
                 switch (response) {
                     case Gtk.ResponseType.ACCEPT:
-                        term = dialog.search_term;
+                        search_term = dialog.search_term;
                         use_regex = dialog.use_regex;
                         case_sensitive = dialog.case_sensitive;
                         break;
@@ -297,15 +298,15 @@ namespace Scratch.FolderManager {
 
             dialog.run ();
 
-            if (term != null) {
+            if (search_term != null) {
                 /* Put search term in search bar to help user locate the position of the matches in each doc */
-                var search_variant = new Variant.string (term);
+                var search_variant = new Variant.string (search_term);
                 var app = (Gtk.Application)GLib.Application.get_default ();
                 var win = (Scratch.MainWindow)(app.get_active_window ());
                 win.actions.lookup_action ("action_find").activate (search_variant);
 
                 if (!use_regex) {
-                    term = Regex.escape_string (term);
+                    search_term = Regex.escape_string (search_term);
                 }
 
                 try {
@@ -314,9 +315,9 @@ namespace Scratch.FolderManager {
                         flags |= RegexCompileFlags.CASELESS;
                     }
 
-                    pattern = new Regex (term, flags);
+                    pattern = new Regex (search_term, flags);
                 } catch (Error e) {
-                    critical ("Error creating regex from '%s': %s", term, e.message);
+                    critical ("Error creating regex from '%s': %s", search_term, e.message);
                     return;
                 }
             } else {

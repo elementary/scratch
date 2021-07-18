@@ -40,6 +40,8 @@ namespace Scratch.Widgets {
         private Gtk.Button replace_tool_button;
         private Gtk.Button replace_all_tool_button;
 
+        private Gtk.Button global_search_button;
+
         private Scratch.Widgets.SourceView? text_view = null;
         private Gtk.TextBuffer? text_buffer = null;
         private Gtk.SourceSearchContext search_context = null;
@@ -104,6 +106,18 @@ namespace Scratch.Widgets {
             );
             case_sensitive_button.clicked.connect (on_search_entry_text_changed);
 
+            global_search_button = new Gtk.Button.from_icon_name ("gnome-globe") {
+                can_focus = false,
+                tooltip_markup = Granite.markup_accel_tooltip ({"<Control><Shift>F"}, "Global Search"),
+                action_name = "win.action_find_global",
+                action_target = new Variant.string ("") // Search in current active project
+            };
+
+            global_search_button.button_press_event.connect (() => {
+                search_entry.grab_focus ();
+                return false;
+            });
+
             var search_grid = new Gtk.Grid ();
             search_grid.margin = 3;
             search_grid.get_style_context ().add_class (Gtk.STYLE_CLASS_LINKED);
@@ -112,6 +126,7 @@ namespace Scratch.Widgets {
             search_grid.add (tool_arrow_up);
             search_grid.add (tool_cycle_search);
             search_grid.add (case_sensitive_button);
+            search_grid.add (global_search_button);
 
             var search_flow_box_child = new Gtk.FlowBoxChild ();
             search_flow_box_child.can_focus = false;
@@ -238,10 +253,6 @@ namespace Scratch.Widgets {
             }
 
             this.window.get_current_document ().toggle_changed_handlers (true);
-        }
-
-        public void set_search_string (string to_search) {
-            search_entry.text = to_search;
         }
 
         private void on_search_entry_text_changed () {

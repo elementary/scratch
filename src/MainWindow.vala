@@ -287,7 +287,7 @@ namespace Scratch {
                 set_search_text ();
             });
             search_bar.search_entry.unmap.connect_after (() => { /* signalled when reveal child */
-                search_bar.set_search_string ("");
+                search_bar.search_entry.text = "";
                 search_bar.highlight_none ();
             });
             search_bar.search_empty.connect (() => {
@@ -883,12 +883,27 @@ namespace Scratch {
         }
 
         private void action_find_global (SimpleAction action, Variant? param) {
-            folder_manager_view.search_global (get_target_path_for_git_actions (param));
+            var current_doc = get_current_document ();
+            var selected_text = current_doc.get_selected_text ();
+
+            // If search entry focused use its text for search term, else use selected text
+            var term = search_bar.search_entry.has_focus ?
+                            search_bar.search_entry.text : selected_text;
+
+            // If no focused selected text fallback to search entry text if visible
+            if (term == "" &&
+                !search_bar.search_entry.has_focus &&
+                search_revealer.reveal_child) {
+
+                term = search_bar.search_entry.text;
+            }
+
+            folder_manager_view.search_global (get_target_path_for_git_actions (param), term);
         }
 
         private void set_search_text () {
             if (current_search_term != "") {
-                search_bar.set_search_string (current_search_term);
+                search_bar.search_entry.text = current_search_term;
                 search_bar.search_entry.grab_focus ();
                 search_bar.search_next ();
             } else {
@@ -898,7 +913,7 @@ namespace Scratch {
                     var selected_text = current_doc.get_selected_text ();
                     if (selected_text != "" && selected_text.length < MAX_SEARCH_TEXT_LENGTH) {
                         current_search_term = selected_text;
-                        search_bar.set_search_string (current_search_term);
+                        search_bar.search_entry.text = current_search_term;
                     }
 
                     search_bar.search_entry.grab_focus (); /* causes loss of document selection */
