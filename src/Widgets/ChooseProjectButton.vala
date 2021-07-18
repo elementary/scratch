@@ -29,7 +29,7 @@ public class Code.ChooseProjectButton : Gtk.MenuButton {
         };
 
         label_widget = new Gtk.Label (_(NO_PROJECT_SELECTED)) {
-            width_chars = 24,
+            width_chars = 16,
             ellipsize = Pango.EllipsizeMode.MIDDLE,
             max_width_chars = 24,
             xalign = 0.0f

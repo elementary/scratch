@@ -72,14 +72,19 @@ namespace Scratch.Widgets {
                 _("Save this file with a different name")
             );
 
-            var revert_button = new Gtk.Button.from_icon_name ("document-revert", Gtk.IconSize.LARGE_TOOLBAR);
-            revert_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_REVERT;
-            revert_button.tooltip_markup = Granite.markup_accel_tooltip (
-                app_instance.get_accels_for_action (revert_button.action_name),
-                _("Restore this file")
-            );
+            var revert_button = new Gtk.Button.from_icon_name ("document-revert", Gtk.IconSize.LARGE_TOOLBAR) {
+                margin_start = 12,
+                action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_REVERT,
+                tooltip_markup = Granite.markup_accel_tooltip (
+                    app_instance.get_accels_for_action (MainWindow.ACTION_PREFIX + MainWindow.ACTION_REVERT),
+                    _("Restore this file")
+                )
+            };
 
-            find_button = new Gtk.ToggleButton ();
+
+            find_button = new Gtk.ToggleButton () {
+                margin_end = 12
+            };
             find_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_SHOW_FIND;
             find_button.image = new Gtk.Image.from_icon_name ("edit-find", Gtk.IconSize.LARGE_TOOLBAR);
             find_button.tooltip_markup = Granite.markup_accel_tooltip (
@@ -188,13 +193,10 @@ namespace Scratch.Widgets {
             pack_start (templates_button);
             pack_start (save_button);
             pack_start (save_as_button);
-            pack_start (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));
             pack_start (revert_button);
             pack_end (app_menu);
             pack_end (share_app_menu);
-            pack_end (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));
             pack_end (find_button);
-
             show_all ();
 
             share_menu.insert.connect (on_share_menu_changed);
