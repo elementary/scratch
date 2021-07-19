@@ -26,7 +26,6 @@ public class Code.Plugins.CtagsSymbolOutline : Object, Code.Plugins.SymbolOutlin
     public CtagsSymbolOutline (Scratch.Services.Document _doc) {
         doc = _doc;
         doc.doc_saved.connect (() => {parse_symbols ();});
-        doc.doc_closed.connect (doc_closed);
 
         root = new Granite.Widgets.SourceList.ExpandableItem (_("Symbols"));
 
@@ -40,14 +39,6 @@ public class Code.Plugins.CtagsSymbolOutline : Object, Code.Plugins.SymbolOutlin
             goto (doc, ((CtagsSymbol)selected).line);
             store.selected = null;
         });
-    }
-
-    ~CtagsSymbolOutline () {
-        doc.doc_closed.disconnect (doc_closed);
-    }
-
-    void doc_closed (Scratch.Services.Document doc) {
-        closed ();
     }
 
     public void parse_symbols () {

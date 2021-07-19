@@ -158,12 +158,12 @@ namespace Scratch.FolderManager {
         }
 
         /* Do global search on project containing the file path supplied in parameter */
-        public void search_global (string path) {
+        public void search_global (string path, string? term = null) {
             var item_for_path = (Item?)(expand_to_path (path));
             if (item_for_path != null) {
                 var search_root = item_for_path.get_root_folder ();
                 if (search_root is ProjectFolderItem) {
-                    search_root.global_search (search_root.file.file);
+                    search_root.global_search (search_root.file.file, term);
                 }
             }
         }
@@ -194,6 +194,16 @@ namespace Scratch.FolderManager {
             if (branch_name != null) {
                 active_project.new_branch (branch_name);
             }
+        }
+
+        // Returns diff of entire project associated with param file
+        public string? get_project_diff (string active_project_path) throws GLib.Error {
+            unowned var active_project = (ProjectFolderItem)(find_path (root, active_project_path));
+            if (active_project != null) {
+                return active_project.get_project_diff ();
+            }
+
+            throw new GLib.IOError.FAILED ("Could not determine the active Git project");
         }
 
         private void add_folder (File folder, bool expand) {

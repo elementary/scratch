@@ -90,6 +90,7 @@ namespace Scratch {
         public const string ACTION_PREVIOUS_TAB = "action_previous_tab";
         public const string ACTION_CLEAR_LINES = "action_clear_lines";
         public const string ACTION_NEW_BRANCH = "action_new_branch";
+        public const string ACTION_SHOW_DIFF = "action_show_diff";
 
         public static Gee.MultiMap<string, string> action_accelerators = new Gee.HashMultiMap<string, string> ();
 
@@ -129,7 +130,8 @@ namespace Scratch {
             { ACTION_NEXT_TAB, action_next_tab },
             { ACTION_PREVIOUS_TAB, action_previous_tab },
             { ACTION_CLEAR_LINES, action_clear_lines },
-            { ACTION_NEW_BRANCH, action_new_branch, "s" }
+            { ACTION_NEW_BRANCH, action_new_branch, "s" },
+            { ACTION_SHOW_DIFF, action_show_diff, "s" }
         };
 
         public MainWindow (Scratch.Application scratch_app) {
@@ -176,6 +178,7 @@ namespace Scratch {
             action_accelerators.set (ACTION_PREVIOUS_TAB, "<Control><Shift>Tab");
             action_accelerators.set (ACTION_CLEAR_LINES, "<Control>K"); //Geany
             action_accelerators.set (ACTION_NEW_BRANCH + "::", "<Control>B");
+            action_accelerators.set (ACTION_SHOW_DIFF + "::", "<Control><Shift>D");
 
             var provider = new Gtk.CssProvider ();
             provider.load_from_resource ("io/elementary/code/Application.css");
@@ -287,7 +290,7 @@ namespace Scratch {
                 set_search_text ();
             });
             search_bar.search_entry.unmap.connect_after (() => { /* signalled when reveal child */
-                search_bar.set_search_string ("");
+                search_bar.search_entry.text = "";
                 search_bar.highlight_none ();
             });
             search_bar.search_empty.connect (() => {
@@ -883,12 +886,27 @@ namespace Scratch {
         }
 
         private void action_find_global (SimpleAction action, Variant? param) {
-            folder_manager_view.search_global (get_target_path_for_git_actions (param));
+            var current_doc = get_current_document ();
+            var selected_text = current_doc.get_selected_text ();
+
+            // If search entry focused use its text for search term, else use selected text
+            var term = search_bar.search_entry.has_focus ?
+                            search_bar.search_entry.text : selected_text;
+
+            // If no focused selected text fallback to search entry text if visible
+            if (term == "" &&
+                !search_bar.search_entry.has_focus &&
+                search_revealer.reveal_child) {
+
+                term = search_bar.search_entry.text;
+            }
+
+            folder_manager_view.search_global (get_target_path_for_git_actions (param), term);
         }
 
         private void set_search_text () {
             if (current_search_term != "") {
-                search_bar.set_search_string (current_search_term);
+                search_bar.search_entry.text = current_search_term;
                 search_bar.search_entry.grab_focus ();
                 search_bar.search_next ();
             } else {
@@ -898,7 +916,7 @@ namespace Scratch {
                     var selected_text = current_doc.get_selected_text ();
                     if (selected_text != "" && selected_text.length < MAX_SEARCH_TEXT_LENGTH) {
                         current_search_term = selected_text;
-                        search_bar.set_search_string (current_search_term);
+                        search_bar.search_entry.text = current_search_term;
                     }
 
                     search_bar.search_entry.grab_focus (); /* causes loss of document selection */
@@ -1005,24 +1023,43 @@ namespace Scratch {
         }
 
         private string? get_target_path_for_git_actions (Variant? path_variant) {
-             string? path = "";
-             if (path_variant != null) {
-                 path = path_variant.get_string ();
-             }
+            string? path = "";
+            if (path_variant != null) {
+                path = path_variant.get_string ();
+            }
 
-             if (path == "") { // Happens when keyboard accelerator is used
-                 path = Services.GitManager.get_instance ().active_project_path;
-                 if (path == null) {
-                     var current_doc = get_current_document ();
-                     if (current_doc != null) {
-                         path = current_doc.file.get_path ();
-                     } else {
-                         return null; // Cannot determine target project
-                     }
-                 }
-             }
+            if (path == "") { // Happens when keyboard accelerator is used
+                path = Services.GitManager.get_instance ().active_project_path;
+                if (path == null) {
+                    var current_doc = get_current_document ();
+                    if (current_doc != null) {
+                        path = current_doc.file.get_path ();
+                    } else {
+                        return null; // Cannot determine target project
+                    }
+                }
+            }
 
-             return path;
-         }
+            return path;
+        }
+
+         private void action_show_diff (SimpleAction action, Variant? param) {
+             try {
+                 string diff_text = folder_manager_view.get_project_diff (get_target_path_for_git_actions (param));
+                 FileIOStream iostream;
+                 File diff_file = File.new_tmp ("git-diff-XXXXXX.diff", out iostream);
+                 warning ("tmp file name: %s\n", diff_file.get_path ());
+
+                 var ostream = iostream.output_stream;
+                 var dostream = new DataOutputStream (ostream);
+                 dostream.put_string (diff_text);
+                 iostream.close ();
+
+                 var doc = new Services.Document (actions, diff_file);
+                 document_view.open_document (doc);
+             } catch (Error e) {
+                 warning ("Unable to get project diff: %s", e.message);
+            }
+        }
     }
 }

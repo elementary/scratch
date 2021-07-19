@@ -338,5 +338,40 @@ namespace Scratch.Services {
                 }
             }
         }
+
+        public string get_project_diff () throws GLib.Error {
+            var sb = new StringBuilder ("");
+            var repo_diff_list = new Ggit.Diff.index_to_workdir (git_repo, null, null);
+            repo_diff_list.print (Ggit.DiffFormatType.PATCH, (delta, hunk, line) => {
+
+                unowned var file_diff = delta.get_old_file ();
+                if (file_diff == null) {
+                    return 0;
+                }
+
+                if (line != null) {
+                    var delta_type = line.get_origin ();
+                    string prefix = "?";
+                    switch (delta_type) {
+                        case Ggit.DiffLineType.ADDITION:
+                            prefix = "+";
+                            break;
+                        case Ggit.DiffLineType.DELETION:
+                            prefix = "-";
+                            break;
+                        case Ggit.DiffLineType.CONTEXT:
+                            prefix = " ";
+                            break;
+                        default:
+                            break;
+                    }
+                    //TODO Add color according to linetype
+                    sb.append (prefix + line.get_text ());
+                }
+                return 0;
+            });
+
+            return sb.str;
+        }
     }
 }

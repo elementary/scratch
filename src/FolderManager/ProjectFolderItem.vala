@@ -145,6 +145,17 @@ namespace Scratch.FolderManager {
             menu.append (create_submenu_for_new ());
 
             if (monitored_repo != null) {
+                var diff_accellabel = new Granite.AccelLabel.from_action_name (
+                    _("Show Diff"),
+                    MainWindow.ACTION_PREFIX + MainWindow.ACTION_SHOW_DIFF + "::"
+                );
+
+                var diff_item = new Gtk.MenuItem () {
+                    action_name = "win.action_show_diff",
+                    action_target = new Variant.string (file.file.get_path ())
+                };
+                diff_item.add (diff_accellabel);
+                menu.append (diff_item);
                 var branch_menu = new ChangeBranchMenu (this) {
                     sensitive = !monitored_repo.has_uncommitted
                 };
@@ -257,10 +268,10 @@ namespace Scratch.FolderManager {
             return is_git_repo ? monitored_repo.is_valid_new_local_branch_name (new_name) : false;
         }
 
-        public void global_search (GLib.File start_folder = this.file.file) {
+        public void global_search (GLib.File start_folder = this.file.file, string? term = null) {
             /* For now set all options to the most inclusive (except case).
              * The ability to set these in the dialog (or by parameter) may be added later. */
-            string? term = null;
+            string? search_term = null;
             bool use_regex = false;
             bool search_tracked_only = false;
             bool recurse_subfolders = true;
@@ -276,13 +287,14 @@ namespace Scratch.FolderManager {
                 monitored_repo != null && monitored_repo.git_repo != null
             ) {
                 case_sensitive = case_sensitive,
-                use_regex = use_regex
+                use_regex = use_regex,
+                search_term = term
             };
 
             dialog.response.connect ((response) => {
                 switch (response) {
                     case Gtk.ResponseType.ACCEPT:
-                        term = dialog.search_term;
+                        search_term = dialog.search_term;
                         use_regex = dialog.use_regex;
                         case_sensitive = dialog.case_sensitive;
                         break;
@@ -297,15 +309,15 @@ namespace Scratch.FolderManager {
 
             dialog.run ();
 
-            if (term != null) {
+            if (search_term != null) {
                 /* Put search term in search bar to help user locate the position of the matches in each doc */
-                var search_variant = new Variant.string (term);
+                var search_variant = new Variant.string (search_term);
                 var app = (Gtk.Application)GLib.Application.get_default ();
                 var win = (Scratch.MainWindow)(app.get_active_window ());
                 win.actions.lookup_action ("action_find").activate (search_variant);
 
                 if (!use_regex) {
-                    term = Regex.escape_string (term);
+                    search_term = Regex.escape_string (search_term);
                 }
 
                 try {
@@ -314,9 +326,9 @@ namespace Scratch.FolderManager {
                         flags |= RegexCompileFlags.CASELESS;
                     }
 
-                    pattern = new Regex (term, flags);
+                    pattern = new Regex (search_term, flags);
                 } catch (Error e) {
-                    critical ("Error creating regex from '%s': %s", term, e.message);
+                    critical ("Error creating regex from '%s': %s", search_term, e.message);
                     return;
                 }
             } else {
@@ -458,6 +470,10 @@ namespace Scratch.FolderManager {
 
         public void refresh_diff (ref Gee.HashMap<int, Services.VCStatus> line_status_map, string doc_path) {
             monitored_repo.refresh_diff (doc_path, ref line_status_map);
+        }
+
+        public string? get_project_diff () throws GLib.Error {
+            return monitored_repo.get_project_diff ();
         }
 
         private class ChangeBranchMenu : Gtk.MenuItem {
