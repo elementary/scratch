@@ -26,6 +26,7 @@ namespace Scratch.FolderManager {
         private GLib.Settings settings;
 
         public signal void select (string file);
+        public signal void select_project (string path);
         public signal void close_all_docs_from_path (string path);
 
         // This is a workaround for SourceList silliness: you cannot remove an item
@@ -53,7 +54,18 @@ namespace Scratch.FolderManager {
             }
 
             if (item is FileItem) {
-                select (((FileItem) item).file.path);
+                var file_item = (FileItem) item;
+                var project_path = file_item.file.path;
+
+                select (project_path);
+
+                var item_for_path = (Item?)(expand_to_path (project_path));
+                if (item_for_path != null) {
+                    var search_root = item_for_path.get_root_folder ();
+                    if (search_root is ProjectFolderItem) {
+                        select_project (search_root.file.file.get_path ());
+                    }
+                }
             }
         }
 
@@ -72,6 +84,8 @@ namespace Scratch.FolderManager {
 
                 return;
             }
+
+            select_project (folder.path);
 
             add_folder (folder, true);
         }

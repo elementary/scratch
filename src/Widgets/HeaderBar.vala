@@ -28,6 +28,9 @@ namespace Scratch.Widgets {
         public Gtk.Button templates_button;
         public Code.FormatBar format_bar;
         public Code.ChooseProjectButton choose_project_button;
+        public Gtk.Button build_button;
+        public Gtk.Button run_button;
+        public Gtk.Button stop_button;
 
         private const string STYLE_SCHEME_HIGH_CONTRAST = "classic";
         private const string STYLE_SCHEME_LIGHT = "solarized-light";
@@ -70,6 +73,27 @@ namespace Scratch.Widgets {
             save_as_button.tooltip_markup = Granite.markup_accel_tooltip (
                 app_instance.get_accels_for_action (save_as_button.action_name),
                 _("Save this file with a different name")
+            );
+
+            build_button = new Gtk.Button.from_icon_name ("media-playlist-repeat", Gtk.IconSize.LARGE_TOOLBAR);
+            build_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_BUILD;
+            build_button.tooltip_markup = Granite.markup_accel_tooltip (
+                app_instance.get_accels_for_action (build_button.action_name),
+                _("Build")
+            );
+
+            run_button = new Gtk.Button.from_icon_name ("media-playback-start", Gtk.IconSize.LARGE_TOOLBAR);
+            run_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_RUN;
+            run_button.tooltip_markup = Granite.markup_accel_tooltip (
+                app_instance.get_accels_for_action (run_button.action_name),
+                _("Run")
+            );
+
+            stop_button = new Gtk.Button.from_icon_name ("media-playback-stop", Gtk.IconSize.LARGE_TOOLBAR);
+            stop_button.action_name = MainWindow.ACTION_PREFIX + MainWindow.ACTION_STOP;
+            stop_button.tooltip_markup = Granite.markup_accel_tooltip (
+                app_instance.get_accels_for_action (stop_button.action_name),
+                _("Stop")
             );
 
             var revert_button = new Gtk.Button.from_icon_name ("document-revert", Gtk.IconSize.LARGE_TOOLBAR);
@@ -188,6 +212,10 @@ namespace Scratch.Widgets {
             pack_start (templates_button);
             pack_start (save_button);
             pack_start (save_as_button);
+            pack_start (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));
+            pack_start (build_button);
+            pack_start (run_button);
+            pack_start (stop_button);
             pack_start (new Gtk.Separator (Gtk.Orientation.HORIZONTAL));
             pack_start (revert_button);
             pack_end (app_menu);

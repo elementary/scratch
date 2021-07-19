@@ -1,0 +1,44 @@
+From adfa816cd498597abde24a9e13df34fe30ac976e Mon Sep 17 00:00:00 2001
+From: Alexander Larsson <alexl@redhat.com>
+Date: Thu, 18 Mar 2021 10:20:27 +0100
+Subject: [PATCH 2/2] custom thread mainloop: finish pending sources when
+ removing
+
+We sometimes set a custom per-thread mainloop because and then spin it
+manually to fake a sync call on a thread using async calls. Primarily
+this happens with the soup streaming calls. In this case, eventually
+we finish the main loop iteration (because, say, the download is done)
+so we stop iterating the mainloop and return from the fake sync code.
+
+However, that might not necessarily be the only thing queued on the
+main context. I ran into a situation where it seems like libsoup did
+some call to a thread-pool during the async call, and the next time i
+used soup aync everything froze. It looks like there is some threaded
+soup service that returned a response on the old context, and since
+that never got handled (since that context is now dead) it now doesn't
+work.
+
+To solve this situation we're now iterating the main context until
+there are no pending sources before killing the main context.
+---
+ common/flatpak-utils-private.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/common/flatpak-utils-private.h b/common/flatpak-utils-private.h
+index 1a921547..84c458f5 100644
+--- a/common/flatpak-utils-private.h
++++ b/common/flatpak-utils-private.h
+@@ -679,6 +679,10 @@ flatpak_main_context_pop_default_destroy (void *p)
+ 
+   if (main_context)
+     {
++      /* Ensure we don't leave some cleanup callbacks unhandled as we will never iterate this context again. */
++      while (g_main_context_pending (main_context))
++        g_main_context_iteration (main_context, TRUE);
++
+       g_main_context_pop_thread_default (main_context);
+       g_main_context_unref (main_context);
+     }
+-- 
+2.30.2
+

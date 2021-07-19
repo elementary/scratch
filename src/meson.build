@@ -32,6 +32,7 @@ code_files = files(
     'Services/GitManager.vala',
     'Services/MonitoredRepository.vala',
     'Services/PluginManager.vala',
+    'Services/ProjectManager.vala',
     'Services/Settings.vala',
     'Services/TemplateManager.vala',
     'Widgets/ChooseProjectButton.vala',

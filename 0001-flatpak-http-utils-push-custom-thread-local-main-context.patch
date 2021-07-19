@@ -1,0 +1,59 @@
+From 1b130c5cc36ce522e367e133fd53ea428133a37c Mon Sep 17 00:00:00 2001
+From: Alexander Larsson <alexl@redhat.com>
+Date: Thu, 18 Mar 2021 10:14:30 +0100
+Subject: [PATCH 1/2] http utils: push custom thread local main context
+
+We're calling async soup APIs with SOUP_SESSION_USE_THREAD_CONTEXT
+set, which means that libsoup async APIs will run async callbacks on
+the loop of the thread-default main context. We then manually spin
+this main context, because we're supposed to look like a sync call and
+the async stuff is just internally.
+
+This is not really right, because normally there isn't any custom
+mainloop context registred, which means we're spinning the main thread
+context on some other thread, as well as queuing soup sorces on
+it. This can't be any good!
+
+Rather than doing this we actually create and push our own main
+context that we then spin isolated from the default mainloop.
+---
+ common/flatpak-utils-http.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/common/flatpak-utils-http.c b/common/flatpak-utils-http.c
+index ffe1b476..3d144051 100644
+--- a/common/flatpak-utils-http.c
++++ b/common/flatpak-utils-http.c
+@@ -670,6 +670,9 @@ flatpak_load_uri (SoupSession           *soup_session,
+ {
+   g_autoptr(GError) local_error = NULL;
+   guint n_retries_remaining = DEFAULT_N_NETWORK_RETRIES;
++  g_autoptr(GMainContextPopDefault) main_context = NULL;
++
++  main_context = flatpak_main_context_new_default ();
+ 
+   /* Ensure we handle file: uris always */
+   if (g_ascii_strncasecmp (uri, "file:", 5) == 0)
+@@ -788,6 +791,9 @@ flatpak_download_http_uri (SoupSession           *soup_session,
+ {
+   g_autoptr(GError) local_error = NULL;
+   guint n_retries_remaining = DEFAULT_N_NETWORK_RETRIES;
++  g_autoptr(GMainContextPopDefault) main_context = NULL;
++
++  main_context = flatpak_main_context_new_default ();
+ 
+   do
+     {
+@@ -1032,6 +1038,9 @@ flatpak_cache_http_uri (SoupSession           *soup_session,
+ {
+   g_autoptr(GError) local_error = NULL;
+   guint n_retries_remaining = DEFAULT_N_NETWORK_RETRIES;
++  g_autoptr(GMainContextPopDefault) main_context = NULL;
++
++  main_context = flatpak_main_context_new_default ();
+ 
+   do
+     {
+-- 
+2.30.2
+
