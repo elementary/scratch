@@ -121,7 +121,7 @@
       <description>Set the preferred font.</description>
     </key>
     <key name="style-scheme" type="s">
-      <default>'solarized-light'</default>
+      <default>'elementary-light'</default>
       <summary>Preferred Style Scheme</summary>
       <description>Set the preferred style scheme.</description>
     </key>

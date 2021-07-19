@@ -30,8 +30,8 @@ namespace Scratch.Widgets {
         public Code.ChooseProjectButton choose_project_button;
 
         private const string STYLE_SCHEME_HIGH_CONTRAST = "classic";
-        private const string STYLE_SCHEME_LIGHT = "solarized-light";
-        private const string STYLE_SCHEME_DARK = "solarized-dark";
+        private const string STYLE_SCHEME_LIGHT = "elementary-light";
+        private const string STYLE_SCHEME_DARK = "elementary-dark";
 
         public HeaderBar () {
             Object (

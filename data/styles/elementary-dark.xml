@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<style-scheme id="elementary-dark" _name="elementary Dark" version="1.0">
+  <author>Micah Ilbery</author>
+  <_description>Color scheme using the elementary color palette</_description>
+
+  <!-- Background Colors Palette -->
+  <color name="bg-0"  value="#485a6c"/> <!-- SLATE500 -->
+  <color name="bg-1"  value="#2a3441"/> <!-- SLATE700 BLACK500 MIX 75% -->
+  <color name="bg-2"  value="#212730"/> <!-- SLATE700 BLACK700 MIX 50% -->
+  <color name="bg-3"  value="#1d2125"/> <!-- SLATE700 BLACK700 MIX 25% -->
+  <color name="bg-4"  value="#0e141f"/> <!-- SLATE900 -->
+
+  <color name="fg-0"   value="#d4d4d4"/> <!-- SILVER300 -->
+  <color name="fg-1"   value="#abacae"/> <!-- SILVER500 -->
+  <color name="fg-2"   value="#667885"/> <!-- SLATE300 -->
+
+  <color name="yellow"  value="#ffe16b"/> <!-- BANANA -->
+  <color name="orange"  value="#ffa154"/> <!-- ORANGE -->
+  <color name="red"     value="#ed5353"/> <!-- STRAWBERRY -->
+  <color name="pink"    value="#f4679d"/> <!-- BUBBLEGUM -->
+  <color name="purple"  value="#cd9ef7"/> <!-- GRAPE -->
+  <color name="blue"    value="#64baff"/> <!-- BLUEBERRY -->
+  <color name="cyan"    value="#28bca3"/> <!-- MINT -->
+  <color name="green"   value="#9bdb4d"/> <!-- LIME -->
+
+  <!-- Global Settings -->
+  <style name="text"                        foreground="fg-0" background="bg-2"/>
+  <style name="selection"                   foreground="bg-4" background="bg-0"/>
+  <style name="cursor"                      foreground="fg-0"/>
+  <style name="secondary-cursor"            foreground="fg-1"/>
+  <style name="current-line"                background="bg-1"/>
+  <style name="line-numbers"                foreground="fg-2" background="bg-3"/>
+  <style name="background-pattern"          background="bg-4"/>
+  <style name="draw-spaces"                 foreground="fg-2"/>
+  
+  <!-- Bracket Matching -->
+  <style name="bracket-match"               foreground="bg-4" background="fg-0"/>
+  <style name="bracket-mismatch"            foreground="red" background="fg-2"/>
+
+  <!-- Right Margin -->
+  <style name="right-margin"                foreground="bg-2" background="fg-1"/>
+
+  <!-- Search Matching -->
+  <style name="search-match"                foreground="bg-4" background="yellow"/>
+
+  <!-- Comments -->
+  <style name="def:comment"                 foreground="fg-2"/>
+  <style name="def:shebang"                 foreground="fg-2" bold="true"/>
+  <style name="def:doc-comment-element"     italic="true"/>
+
+  <!-- Constants -->
+  <style name="def:constant"                foreground="cyan"/>
+  <style name="def:special-char"            foreground="green"/>
+
+  <!-- Identifiers -->
+  <style name="def:identifier"              foreground="blue"/>
+
+  <!-- Statements -->
+  <style name="def:statement"               foreground="orange"/>
+
+  <!-- Types -->
+  <style name="def:type"                    foreground="yellow"/>
+
+  <!-- Markup -->
+  <style name="def:emphasis"                italic="true"/>
+  <style name="def:strong-emphasis"         foreground="orange"/>
+  <style name="def:inline-code"             foreground="blue"/>
+  <style name="def:insertion"               underline="single"/>
+  <style name="def:deletion"                strikethrough="true"/>
+  <style name="def:link-text"               foreground="fg-2"/>
+  <style name="def:link-symbol"             foreground="fg-2" bold="true"/>
+  <style name="def:link-destination"        italic="true" underline="single"/>
+  <style name="def:heading"                 foreground="yellow"/>
+  <style name="def:thematic-break"          foreground="yellow"/>
+  <style name="def:preformatted-section"    foreground="blue"/>
+  <style name="def:list-marker"             foreground="orange"/>
+
+  <!-- Operators -->
+  <style name="def:operator"                foreground="green"/>
+
+  <!-- Others -->
+  <style name="def:preprocessor"            foreground="purple"/>
+  <style name="def:error"                   foreground="red" bold="true"/>
+  <style name="def:note"                    foreground="pink" bold="true"/>
+  <style name="def:net-address"             italic="true" underline="single"/>
+
+</style-scheme>

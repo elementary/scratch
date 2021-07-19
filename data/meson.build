@@ -12,6 +12,11 @@ foreach i : icon_sizes
 endforeach
 
 install_data([
+  'styles/elementary-dark.xml',
+  'styles/elementary-light.xml',
+], install_dir: join_paths(get_option('datadir'), 'gtksourceview-4', 'styles'))
+
+install_data([
   'fonts/BuilderBlocks.ttf',
 ], install_dir: join_paths(get_option('datadir'), meson.project_name(), 'fonts'))
 
