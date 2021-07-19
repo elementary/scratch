@@ -196,6 +196,17 @@ namespace Scratch.FolderManager {
             }
         }
 
+        // Returns diff of entire project associated with param file
+        public string? get_project_diff (string active_project_path) throws GLib.Error {
+            unowned var active_project = (ProjectFolderItem)(find_path (root, active_project_path));
+            if (active_project == null || !active_project.is_git_repo) {
+                Gdk.beep ();
+                throw new GLib.IOError.FAILED ("Could not determine the active Git project");;
+            }
+
+            return active_project.get_project_diff ();
+        }
+
         private void add_folder (File folder, bool expand) {
             if (is_open (folder)) {
                 warning ("Folder '%s' is already open.", folder.path);

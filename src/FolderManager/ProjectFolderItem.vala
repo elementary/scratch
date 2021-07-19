@@ -460,6 +460,10 @@ namespace Scratch.FolderManager {
             monitored_repo.refresh_diff (doc_path, ref line_status_map);
         }
 
+        public string? get_project_diff () throws GLib.Error {
+            return monitored_repo.get_project_diff ();
+        }
+
         private class ChangeBranchMenu : Gtk.MenuItem {
             public Scratch.Services.MonitoredRepository monitored_repo {
                 get {

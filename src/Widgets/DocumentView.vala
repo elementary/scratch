@@ -140,12 +140,13 @@ public class Scratch.Widgets.DocumentView : Granite.Widgets.DynamicNotebook {
         return unsaved_file_path_builder (extension);
     }
 
-    public void new_document () {
+    public Services.Document? new_document () {
+        Services.Document? doc = null;
         var file = File.new_for_path (unsaved_file_path_builder ());
         try {
             file.create (FileCreateFlags.PRIVATE);
 
-            var doc = new Services.Document (window.actions, file);
+            doc = new Services.Document (window.actions, file);
 
             insert_tab (doc, -1);
             current_document = doc;
@@ -155,6 +156,8 @@ public class Scratch.Widgets.DocumentView : Granite.Widgets.DynamicNotebook {
         } catch (Error e) {
             critical (e.message);
         }
+
+        return doc;
     }
 
     public void new_document_from_clipboard (string clipboard) {
