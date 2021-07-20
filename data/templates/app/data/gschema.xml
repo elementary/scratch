@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="com.github.{{ github_username }}.{{ github_repository }}" path="/com/github/{{ github_username }}/{{ github_repository }}/" gettext-domain="com.github.{{ github_username }}.{{ github_repository }}">
+    <key name="window-maximized" type="b">
+      <default>false</default>
+      <summary>Whether the window was maximized on last run</summary>
+      <description>Whether the window was maximized on last run</description>
+    </key>
+    <key name="window-position" type="(ii)">
+      <default>(-1, -1)</default>
+      <summary>Window position</summary>
+      <description>Most recent window position (x, y)</description>
+    </key>
+    <key name="window-size" type="(ii)">
+      <default>(1000, 800)</default>
+      <summary>Most recent window size</summary>
+      <description>Most recent window size (width, height)</description>
+    </key>
+  </schema>
+</schemalist>

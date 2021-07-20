@@ -1,0 +1,2 @@
+data/{{ github_repository }}.appdata.xml.in
+data/desktop.in

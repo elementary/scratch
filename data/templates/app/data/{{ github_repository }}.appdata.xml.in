@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright {{ current_year }} {{ your_name }} <{{ your_email }}> -->
+<component type="desktop">
+  <id>com.github.{{ github_username }}.{{ github_repository }}</id>
+  <metadata_license>CC0</metadata_license>
+  <name>{{ app_name }}</name>
+  <summary>{{ app_summary }}</summary>
+  <description>
+    <p>{{ app_description }}</p>
+  </description>
+  <custom>
+    <value key="x-appcenter-color-primary"></value>
+    <value key="x-appcenter-color-primary-text"></value>
+    <value key="x-appcenter-suggested-price"></value>
+  </custom>
+</component>

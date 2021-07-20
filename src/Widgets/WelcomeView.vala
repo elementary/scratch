@@ -32,6 +32,7 @@ public class Code.WelcomeView : Granite.Widgets.Welcome {
         append ("document-new", _("New File"), _("Create a new empty file."));
         append ("document-open", _("Open File"), _("Open a saved file."));
         append ("folder-saved-search", _("Open Folder"), _("Add a project folder to the sidebar."));
+        append ("application-default-icon", _("New App"), _("Create a new app."));
 
         activated.connect ((i) => {
             // New file
@@ -41,6 +42,8 @@ public class Code.WelcomeView : Granite.Widgets.Welcome {
                 Scratch.Utils.action_from_group (Scratch.MainWindow.ACTION_OPEN, window.actions).activate (null);
             } else if (i == 2) {
                 Scratch.Utils.action_from_group (Scratch.MainWindow.ACTION_OPEN_FOLDER, window.actions).activate (null);
+            } else if (i == 3) {
+                Scratch.Utils.action_from_group (Scratch.MainWindow.ACTION_NEW_APP, window.actions).activate (null);
             }
         });
     }

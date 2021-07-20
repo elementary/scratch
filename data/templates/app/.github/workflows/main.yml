@@ -1,0 +1,25 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  flatpak:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/bilelmoussaoui/flatpak-github-actions:elementary-juno
+      options: --privileged
+    steps:
+    - uses: actions/checkout@v2
+    - uses: bilelmoussaoui/flatpak-github-actions@master
+      with:
+        bundle: "com.github.{{ github_username }}.{{ github_repository }}.flatpak"
+        manifest-path: "com.github.{{ github_username }}.{{ github_repository }}.yml"
+        run-tests: "true"
+        repository-name: "elementary"
+        repository-url: "https://flatpak.elementary.io/elementary.flatpakrepo"
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: elementary/actions/vala-lint@master

@@ -15,6 +15,10 @@ install_data([
   'fonts/BuilderBlocks.ttf',
 ], install_dir: join_paths(get_option('datadir'), meson.project_name(), 'fonts'))
 
+install_subdir([
+  'templates',
+], install_dir: join_paths(get_option('datadir'), meson.project_name()))
+
 install_data(
     'io.elementary.code.gschema.xml',
     'io.elementary.code.plugins.spell.gschema.xml',

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name={{ app_name }}
+Comment={{ app_summary }}
+Exec=com.github.{{ github_username }}.{{ github_repository }}
+Icon=com.github.{{ github_username }}.{{ github_repository }}
+Terminal=false
+Type=Application
